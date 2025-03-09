@@ -1,13 +1,45 @@
-import React, { useState } from 'react';
-import { Code2, Container, Moon, Sun, Github, Terminal, Save, Play, Box, Rocket } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Code2, Container, Moon, Sun, Github, Terminal, Save, Play, Box, Rocket, ChevronLeft, ChevronRight } from 'lucide-react';
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
     document.documentElement.classList.toggle('dark');
   };
+
+  const screenshots = [
+    {
+      src: "/languageSelect.png",
+      title: "Language Selection Dashboard",
+      description: "Choose from a variety of programming languages to start coding instantly"
+    },
+    {
+      src: "/goEditor.png",
+      title: "Code Editor Interface",
+      description: "Modern code editor with syntax highlighting and file management"
+    },
+    {
+      src: "/rustEditor.png",
+      title: "Terminal Integration",
+      description: "Full-featured terminal access for running and testing your code"
+    }
+  ];
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % screenshots.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + screenshots.length) % screenshots.length);
+  };
+
+  useEffect(() => {
+    const timer = setInterval(nextSlide, 5000);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'dark bg-gray-900' : 'bg-gray-50'}`}>
@@ -53,6 +85,82 @@ function App() {
               Try any programming language right on your machine without the hassle of downloads, 
               configurations, or environment setup. Perfect for beginners and experienced developers alike.
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Screenshots Carousel */}
+      <section className="py-12 px-4">
+        <div className="container mx-auto">
+          <h2 className={`text-3xl font-bold text-center mb-8 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+            See CodeBox in Action
+          </h2>
+          <div className="relative">
+            <div className="overflow-hidden rounded-xl">
+              <div 
+                className="flex transition-transform duration-500 ease-out"
+                style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+              >
+                {screenshots.map((screenshot, index) => (
+                  <div key={index} className="w-full flex-shrink-0">
+                    <div className={`aspect-[16/9] relative ${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
+                      <img
+                        src={screenshot.src}
+                        alt={screenshot.title}
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                    <div className={`text-center mt-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                      <h3 className="text-xl font-semibold">{screenshot.title}</h3>
+                      <p className={`mt-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                        {screenshot.description}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Navigation Buttons */}
+            <button
+              onClick={prevSlide}
+              className={`absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full ${
+                isDarkMode 
+                  ? 'bg-gray-800/80 hover:bg-gray-700/80 text-white' 
+                  : 'bg-white/80 hover:bg-gray-100/80 text-gray-900'
+              } backdrop-blur-sm`}
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+            <button
+              onClick={nextSlide}
+              className={`absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full ${
+                isDarkMode 
+                  ? 'bg-gray-800/80 hover:bg-gray-700/80 text-white' 
+                  : 'bg-white/80 hover:bg-gray-100/80 text-gray-900'
+              } backdrop-blur-sm`}
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
+
+            {/* Dots */}
+            <div className="flex justify-center mt-4 gap-2">
+              {screenshots.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentSlide(index)}
+                  className={`w-2 h-2 rounded-full transition-all ${
+                    currentSlide === index
+                      ? isDarkMode 
+                        ? 'bg-blue-400 w-4' 
+                        : 'bg-blue-600 w-4'
+                      : isDarkMode
+                        ? 'bg-gray-600'
+                        : 'bg-gray-300'
+                  }`}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </section>
